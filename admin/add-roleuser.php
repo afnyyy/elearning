@@ -1,61 +1,54 @@
-<?php 
+<?php
+require_once "../koneksi.php";
 session_start();
-include "koneksi.php";
 
-if (isset($_POST['login'])) {
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-  
-  $login = mysqli_query($koneksi, "SELECT * FROM users WHERE email = '$email'");
-  
-  // jika email ditemukan
-  if (mysqli_num_rows($login) > 0) {
-    //buat data user
-    $rowUser = mysqli_fetch_assoc($login);
-    // var_dump($rowUser);
-    // die();
-    
-    if ($rowUser['password'] == $password) {
-      $_SESSION['EMAIL'] = $rowUser['email'];
-      $_SESSION['ID_USER'] = $rowUser['id'];
-      $_SESSION['NAME'] = $rowUser['name'];
 
-      header("Location:admin/dashboard.php");
-    }
-  }else {
-    header("Location:login.php?login=error");
+if (empty($_SESSION['EMAIL'])) {
+  header("Location: ../login.php");
+}
+
+$role = mysqli_query($koneksi, "SELECT * FROM roles ORDER BY id DESC");
+$rows = mysqli_fetch_all($role, MYSQLI_ASSOC);
+
+$userRole = mysqli_query($koneksi, "SELECT * FROM user_role");
+$rowURoles = mysqli_fetch_all($userRole, MYSQLI_ASSOC);
+
+$user = mysqli_query($koneksi, "SELECT * FROM users ORDER BY id DESC");
+$rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
+
+if (isset($_POST['save'])) {
+  $name_user = $_POST['user_id'];
+  $name_role = $_POST['role_id'];
+  
+
+  $insert = mysqli_query($koneksi, "INSERT INTO user_role (user_id, role_id) VALUES ('$name_user', '$name_role')");
+
+  if ($insert) {
+    header("Location: user.php");
+  } else {
+    header("Location: add-roleuser.php");
   }
 }
 
-// if (isset($_POST['login'])) {
-//   $email = $_POST['email'];
-//   $password = $_POST['password'];
-  
-//   $login = mysqli_query($koneksi, "SELECT * FROM users WHERE email = '$email'");
-//   $row = mysqli_fetch_assoc($login);
+if (isset($_GET['Edit'])) {
+  $id = $_GET['Edit'];
 
-//   if ($row){
-//     //if (password_verify($password, $row['password]))
-//     if (password_verify($password, $row['password'])) {
-//       $_SESSION['name'] = $row['name'];
-//       $_SESSION['role'] = $row['role_name'];
+  $qEdit = mysqli_query($koneksi, "SELECT * FROM user_role WHERE id = $id");
+  $rowUpdate = mysqli_fetch_assoc($qEdit); 
+}
 
-//       $id_role = $row['id_role'];
-//       $queryRole = mysqli_query($koneksi, "SELECT * FROM roles WHERE id = '$id_role'");
-//       $rowRole = mysqli_fetch_assoc($queryRole);
+if (isset($_POST['edit'])) {
+  $id = $_GET['Edit'];
+  $name_user = $_POST['user_id'];
+  $name_role = $_POST['role_id'];
 
-//       $_SESSION['role'] = $rowRole['role_name'];
+  $qUpdate = mysqli_query($koneksi, "UPDATE user_role SET user_id='$name_user', role_id='$name_role' WHERE id = $id");
+  if ($qUpdate){
+    header("Location: user.php?berhasil=edit");
+  }
+}
 
-//       header("location: admin/dashboard.php");
-//       exit();
-//     } else {
-//       header("location: login.php?error=password_salah");
-//       exit();
-//     }
-//   } else {
-//     header("location: login.php?error=email_tidak_ditemukan");
-//   }
-// }
+
 
 ?>
 <!DOCTYPE html>
@@ -65,12 +58,12 @@ if (isset($_POST['login'])) {
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Login Dashboard</title>
+  <title>Admin</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
+  <link href="../assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
@@ -78,16 +71,16 @@ if (isset($_POST['login'])) {
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="../assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="../assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="../assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="../assets/vendor/simple-datatables/style.css" rel="stylesheet">
 
   <!-- Template Main CSS File -->
-  <link href="assets/css/style.css" rel="stylesheet">
+  <link href="../assets/css/style.css" rel="stylesheet">
 
   <!-- =======================================================
   * Template Name: NiceAdmin
@@ -108,91 +101,111 @@ if (isset($_POST['login'])) {
 
 <body>
 
-  <main>
-    <div class="container">
+  <!-- ======= Header ======= -->
+  <?php  include "../inc/header.php"; ?>
+  <!-- End Header -->
 
-      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+  <!-- ======= Sidebar ======= -->
+  <?php  include "../inc/sidebar.php"; ?>
+  <!-- End Sidebar-->
 
-              <div class="d-flex justify-content-center py-4">
-                <a href="index.html" class="logo d-flex align-items-center w-auto">
-                  <img src="assets/img/ppkd.png" alt="">
-                  <span class="d-none d-lg-block">Login</span>
-                </a>
-              </div><!-- End Logo -->
+  <main id="main" class="main">
 
-              <div class="card mb-3">
+    <div class="pagetitle">
+      <h1>Admin</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Pages</li>
+          <li class="breadcrumb-item active">Blank</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
 
-                <div class="card-body">
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
 
-                  <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
-                    <p class="text-center small">Enter your email & password to login</p>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><?php echo isset($_GET['Edit']) ? 'Edit ' : 'Create New' .' '?>Role User</h5>
+              <form action="" method="post" enctype="multipart/form-data">
+                
+          
+                <div class="mb-3 row">
+                  <div class="col-sm-2">
+                    <label for="">User</label>
                   </div>
-
-                  <form class="row g-3 needs-validation" action="" method ="post">
-
-                  <div class="col-12">
-                      <label for="yourEmail" class="form-label">Email</label>
-                      <div class="input-group has-validation">
-                        <input type="email" name="email" class="form-control" id="yourEmail" autocomplete="email" required>
-                        <div class="invalid-feedback">Please enter your email.</div>
-                      </div>
-                    </div>
-
-                    <div class="col-12">
-                      <label for="yourPassword" class="form-label">Password</label>
-                      <input type="password" name="password" class="form-control" id="yourPassword" autocomplete="current-password" required>
-                      <div class="invalid-feedback">Please enter your password!</div>
-                    </div>
-
-                    <div class="col-12">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe">Remember me</label>
-                      </div>
-                    </div>
-                    <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit" name="login">Login</button>
-                    </div>
-                  </form>
-
+                  <div class="col-sm-6">
+                    <select id="user_id" class="form-control" name="user_id">
+                    <option value="0" hidden>Choose User</option>
+                    <?php foreach ($rowUsers as $rowUser) { ?>
+                      <option value="<?php echo $rowUser['id']?>"><?php echo $rowUser['name']?></option>
+                    <?php } ?>
+                    </select>
+                  </div>
                 </div>
-              </div>
 
-              <div class="credits">
-                <!-- All the links in the footer should remain intact. -->
-                <!-- You can delete the links only if you purchased the pro version. -->
-                <!-- Licensing information: https://bootstrapmade.com/license/ -->
-                <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-                Designed by <a href="https://bootstrapmade.com/">Afny</a>
-              </div>
+                <div class="row mb-3">
+                  <div class="col-sm-2">
+                    <label for="">Role Name</label>
+                  </div>
+                  <div class="col-sm-6">
+                    <select id="roles" class="form-control" name="role_id">
+                        <option value="0" hidden>Choose Role</option>
+                        <?php foreach ($rows as $row) { ?>
+                          <option value="<?php echo $row['id']?>"><?php echo $row['name']?></option>
+                        <?php } ?>
+                    </select>
+                  </div>               
+                </div>
 
+                <!-- <div class="row mb-3">
+                  <div class="col-sm-2">
+                    <label for="">Role Name 2</label>
+                  </div>
+                  <div class="col-sm-6">
+                    <select id="roles" class="form-control" name="role_id">
+                        <option value="0" hidden>Choose Role</option>
+                        <?php foreach ($rows as $row) { ?>
+                          <option value="<?php echo $row['id']?>"><?php echo $row['name']?></option>
+                        <?php } ?>
+                    </select>
+                  </div>               
+                </div> -->
+
+                <div class="col mb-3">
+                  <button class="btn btn-primary" type="submit" name="<?php echo isset($_GET['Edit']) ? 'Edit' : 'save' ?>">Save</button>
+                </div>
+                
+              </form>
             </div>
           </div>
+
         </div>
 
-      </section>
+      </div>
+    </section>
 
-    </div>
   </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <?= include '../inc/footer.php'; ?>
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
-  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="assets/vendor/echarts/echarts.min.js"></script>
-  <script src="assets/vendor/quill/quill.js"></script>
-  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="../assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="../assets/vendor/echarts/echarts.min.js"></script>
+  <script src="../assets/vendor/quill/quill.js"></script>
+  <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="../assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="../assets/vendor/php-email-form/validate.js"></script>
 
   <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
+  <script src="../assets/js/main.js"></script>
 
 </body>
 

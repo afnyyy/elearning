@@ -127,8 +127,8 @@ if (isset($_GET['idDel'])) {
                       <td><?= $row['name'] ?></td>
                       <td><?= $row['is_active'] ?></td>
                       <td>
-                      <a href="edit-role.php?Edit=<?php echo $row['id'] ?>" class="btn btn-success btn-sm">Edit</a>
-                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="role.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                      <a href="edit-role.php?Edit=<?php echo $row['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="role.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
                        
                       </td>
                     </tr>
@@ -169,7 +169,7 @@ if (isset($_GET['idDel'])) {
                 <div class="col-sm-5">
                   <select name="role" id="role_id" class="form-control">
                     <option value="" hidden>Choose Role</option>
-                    <?php foreach ($rowRoles as $rowRole) { ?>
+                    <?php foreach ($rows as $rowRole) { ?>
                       <option value="<?php echo $rowRole['id']?>"><?php echo $rowRole['name']?></option>
                     <?php } ?>
                   </select>

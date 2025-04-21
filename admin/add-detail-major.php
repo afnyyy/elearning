@@ -2,15 +2,49 @@
 require_once "../koneksi.php";
 session_start();
 
-$contact = mysqli_query($koneksi, "SELECT * FROM contact");
-$rows = mysqli_fetch_all($contact, MYSQLI_ASSOC);
 
-if (isset($_GET['idDel'])) {
-  $id = $_GET['idDel'];
+if (empty($_SESSION['EMAIL'])) {
+  header("Location: ../login.php");
+}
 
-  $del = mysqli_query($koneksi, "DELETE FROM contact WHERE id = $id");
-  if ($del) {
-    header("Location: contact.php");
+$major = mysqli_query($koneksi, "SELECT * FROM majors ORDER BY id DESC");
+$rows = mysqli_fetch_all($major, MYSQLI_ASSOC);
+
+$majorDetail = mysqli_query($koneksi, "SELECT * FROM majors_detail");
+$rowMD = mysqli_fetch_all($majorDetail, MYSQLI_ASSOC);
+
+$user = mysqli_query($koneksi, "SELECT * FROM users ORDER BY id DESC");
+$rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
+
+if (isset($_POST['save'])) {
+  $name_major = $_POST['majors_id'];
+  $name_user = $_POST['user_id'];
+  
+
+  $insert = mysqli_query($koneksi, "INSERT INTO majors_detail (majors_id, user_id) VALUES ('$name_major', '$name_user')");
+
+  if ($insert) {
+    header("Location: major.php?berhasil=disimpan");
+  } else {
+    header("Location: add-detail-major.php?gagal=disimpan");
+  }
+}
+
+if (isset($_GET['Edit'])) {
+  $id = $_GET['Edit'];
+
+  $qEdit = mysqli_query($koneksi, "SELECT * FROM majors_detail WHERE id = $id");
+  $rowUpdate = mysqli_fetch_assoc($qEdit); 
+}
+
+if (isset($_POST['edit'])) {
+  $id = $_GET['Edit'];
+  $name_major = $_POST['majors_id'];
+  $name_user = $_POST['user_id'];
+
+  $qUpdate = mysqli_query($koneksi, "UPDATE majors_detail SET majors_id='$name_major,' user_id='$name_user' WHERE id = $id");
+  if ($qUpdate){
+    header("Location: major.php?berhasil=edit");
   }
 }
 
@@ -24,7 +58,7 @@ if (isset($_GET['idDel'])) {
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Components / Accordion - NiceAdmin Bootstrap Template</title>
+  <title>Admin</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -78,7 +112,7 @@ if (isset($_GET['idDel'])) {
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Contact</h1>
+      <h1>Admin</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="index.html">Home</a></li>
@@ -94,34 +128,43 @@ if (isset($_GET['idDel'])) {
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Contact</h5>
-              <div class="table table-responsive">
-                <table class="table table-bordered">
-                  <tr>
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th>Subject</th>
-                    <th>Pesan</th>
-                    <th>Actions</th>
-                  </tr>
-                  <?php
-                  $no = 1;
-                  foreach ($rows as $row) {
-                  ?>
-                    <tr>
-                      <td><?= $no++ ?></td>
-                      <td><?= $row['nama'] ?></td>
-                      <td><?= $row['email'] ?></td>
-                      <td><?= $row['subjek'] ?></td>
-                      <td><?= $row['pesan'] ?></td>
-                      <td><a href="kirimcontact.php?idPesan=<?php echo $row ['id'] ?>" class="btn btn-success btn-sm">Balas Pesan</a>
-                      <a href="contact.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin mendelete ?')">Delete</a></td>
-                    </tr>
-                  <?php
-                  } ?>
-                </table>
-              </div>
+              <h5 class="card-title"><?php echo isset($_GET['Edit']) ? 'Edit ' : 'Create New' .' '?>Major Detail</h5>
+              <form action="" method="post" enctype="multipart/form-data">
+                
+          
+                <div class="mb-3 row">
+                  <div class="col-sm-2">
+                    <label for="">User</label>
+                  </div>
+                  <div class="col-sm-6">
+                    <select id="user_id" class="form-control" name="user_id">
+                    <option value="0" hidden>Choose User</option>
+                    <?php foreach ($rowUsers as $rowUser) { ?>
+                      <option value="<?php echo $rowUser['id']?>"><?php echo $rowUser['name']?></option>
+                    <?php } ?>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-sm-2">
+                    <label for="">Major</label>
+                  </div>
+                  <div class="col-sm-6">
+                    <select id="majors" class="form-control" name="majors_id">
+                        <option value="0" hidden>Choose Role</option>
+                        <?php foreach ($rows as $row) { ?>
+                          <option value="<?php echo $row['id']?>"><?php echo $row['name']?></option>
+                        <?php } ?>
+                    </select>
+                  </div>               
+                </div>
+
+                <div class="col mb-3">
+                  <button class="btn btn-primary" type="submit" name="<?php echo isset($_GET['Edit']) ? 'Edit' : 'save' ?>">Save</button>
+                </div>
+                
+              </form>
             </div>
           </div>
 
@@ -133,18 +176,7 @@ if (isset($_GET['idDel'])) {
   </main><!-- End #main -->
 
   <!-- ======= Footer ======= -->
-  <footer id="footer" class="footer">
-    <div class="copyright">
-      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
-    </div>
-    <div class="credits">
-      <!-- All the links in the footer should remain intact. -->
-      <!-- You can delete the links only if you purchased the pro version. -->
-      <!-- Licensing information: https://bootstrapmade.com/license/ -->
-      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-    </div>
-  </footer><!-- End Footer -->
+  <?= include '../inc/footer.php'; ?>
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 

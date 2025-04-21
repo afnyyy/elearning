@@ -7,27 +7,26 @@ if (empty($_SESSION['EMAIL'])) {
   header("Location: ../login.php");
 }
 
-$queryInstructors = mysqli_query($koneksi, "SELECT
-    i.id AS instructor_id,
+$queryStudents = mysqli_query($koneksi, "SELECT
+    s.id AS student_id,
     m.name AS majors_name,
     u.name AS user_name,
-    i.id,
-    i.title,
-    i.gender,
-    i.address,
-    i.phone,
-    i.photo,
-    i.is_active
+    s.id,
+    s.gender,
+    s.date_of_birth,
+    s.place_of_birth,
+    s.photo,
+    s.is_active
 FROM
-    instructors i
+    students s
 LEFT JOIN
-    majors m ON i.majors_id = m.id
+    majors m ON s.majors_id = m.id
 LEFT JOIN
-    users u ON i.user_id = u.id
+    users u ON s.user_id = u.id
 ORDER BY
-    i.id DESC");
+    s.id DESC");
 
-$instructors = mysqli_fetch_all($queryInstructors, MYSQLI_ASSOC);
+$students = mysqli_fetch_all($queryStudents, MYSQLI_ASSOC);
 
 // $instruktur = mysqli_query($koneksi, "SELECT * FROM instructors");
 // $rows = mysqli_fetch_all($instruktur, MYSQLI_ASSOC);
@@ -46,9 +45,9 @@ if (isset($_GET['idDel'])) {
   $rowcekFoto = mysqli_fetch_assoc($cekFOTO);
   if ($rowcekFoto && file_exists("../assets/uploads/" . $fotoLama['photo'])) {
     unlink("../assets/uploads/" . $rowcekFoto['photo']);
-    $delete = mysqli_query($koneksi, "DELETE FROM instructors WHERE id = $id");
+    $delete = mysqli_query($koneksi, "DELETE FROM students WHERE id = $id");
     if ($delete) {
-      header("Location: instruktur.php");
+      header("Location: siswa.php?delete=berhasil");
     }
   }
 
@@ -89,38 +88,36 @@ if (isset($_GET['idDel'])) {
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Instruktur</h5>
+              <h5 class="card-title">Siswa</h5>
               <div class="table table-responsive">
-                <a class="btn btn-primary mb-2" href="edit-instruktur.php">CREATE</a>
+                <a class="btn btn-primary mb-2" href="edit-siswa.php">CREATE</a>
                 <table class="table table-bordered">
                   <tr>
                     <th>No</th>
                     <th>Major</th>
                     <th>User</th>
-                    <th>Tittle/Gelar</th>
                     <th>Gender</th>
-                    <th>Address</th>
-                    <th>Phone</th>
+                    <th>Date of birth</th>
+                    <th>Place of birth</th>
                     <th>Photo</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                   <?php
                   $no = 1;
-                  foreach ($instructors as $instructor) {
+                  foreach ($students as $student) {
                   ?>
                     <tr>
                       <td><?= $no++ ?></td>
-                      <td><?= $instructor['majors_name'] ?></td>
-                      <td><?= $instructor['user_name'] ?></td>
-                      <td><?= $instructor['title'] ?></td>
-                      <td><?= $instructor['gender'] ?></td>
-                      <td><?= $instructor['address'] ?></td>
-                      <td><?= $instructor['phone']?></td>
-                      <td><img width="150" src="../assets/uploads/<?= $instructor['photo'] ?>" alt=""></td>
-                      <td><?= $instructor['is_active'] ?></td>
-                      <td><a href="edit-instruktur.php?Edit=<?php echo $instructor['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
-                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="instruktur.php?idDel=<?php echo $instructor['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
+                      <td><?= $student['majors_name'] ?></td>
+                      <td><?= $student['user_name'] ?></td>
+                      <td><?= $student['gender'] ?></td>
+                      <td><?= $student['date_of_birth'] ?></td>
+                      <td><?= $student['place_of_birth']?></td>
+                      <td><img width="150" src="../assets/uploads/<?= $student['photo'] ?>" alt=""></td>
+                      <td><?= $student['is_active'] ?></td>
+                      <td><a href="edit-siswa.php?Edit=<?php echo $student['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="instruktur.php?idDel=<?php echo $student['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
                       </td>
                     </tr>
                   <?php

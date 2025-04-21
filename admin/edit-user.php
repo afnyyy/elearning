@@ -44,7 +44,6 @@ if (isset($_POST['edit'])) {
 }
 
 
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -161,20 +160,7 @@ if (isset($_POST['edit'])) {
                     
                   </div>               
                 </div>
-                <div class="row mb-3">
-                <div class="col-sm-2">
-                  <label for="">Role</label>
-                </div>
-                <div class="col-sm-5">
-                  <select name="role" id="role_id" class="form-control">
-                    <option value="" hidden>Choose Role</option>
-                    <?php foreach ($rowRoles as $rowRole) { ?>
-                      <option value="<?php echo $rowRole['id']?>"><?php echo $rowRole['name']?></option>
-                    <?php } ?>
-                  </select>
-                </div>
-              </div>
-
+                
 
 
                 <div class="col mb-3">

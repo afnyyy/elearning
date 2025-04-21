@@ -7,8 +7,27 @@ if (empty($_SESSION['EMAIL'])) {
   header("Location: ../login.php");
 }
 
-$user = mysqli_query($koneksi, "SELECT * FROM users");
+$user = mysqli_query($koneksi, "SELECT
+    u.id AS user_id,
+    u.name AS user_name,
+    u.id,
+    u.email,
+    u.password,
+    u.is_active,
+    r.name AS role_name
+FROM
+    users u
+LEFT JOIN
+    user_role ur ON u.id = ur.user_id
+LEFT JOIN
+    roles r ON ur.role_id = r.id
+ORDER BY
+    u.id DESC");
 $rows = mysqli_fetch_all($user, MYSQLI_ASSOC);
+
+// Query untuk mengambil semua roles tetap diperlukan jika Anda membutuhkannya untuk keperluan lain di halaman ini
+$role = mysqli_query($koneksi, "SELECT * FROM roles");
+$rowRoles = mysqli_fetch_all($role, MYSQLI_ASSOC);
 
 
 if (isset($_GET['idDel'])) {
@@ -109,6 +128,7 @@ if (isset($_GET['idDel'])) {
                 <table class="table table-bordered">
                   <tr>
                     <th>No</th>
+                    <th>Role</th>
                     <th>Nama</th>
                     <th>Email</th>
                     <th>Password</th>
@@ -121,14 +141,15 @@ if (isset($_GET['idDel'])) {
                   ?>
                     <tr>
                       <td><?= $no++ ?></td>
-                      <td><?= $row['name'] ?></td>
+                      <td><?= $row['role_name'] ?></td>
+                      <td><?= $row['user_name'] ?></td>
                       <td><?= $row['email']?></td>
                       <td><?= $row['password'] ?></td>
                       <td><?= $row['is_active'] ?></td>
                       <td>
-                      <a href="add-role.php" class="btn btn-primary btn-sm">Add Role</a>
-                      <a href="edit-user.php?Edit=<?php echo $row['id'] ?>" class="btn btn-success btn-sm">Edit</a>
-                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="user.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                      <a href="add-roleuser.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i></i></a>
+                      <a href="edit-user.php?Edit=<?php echo $row['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="user.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
                        
                       </td>
                     </tr>

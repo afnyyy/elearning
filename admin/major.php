@@ -121,8 +121,9 @@ if (isset($_GET['idDel'])) {
                       <td><?= $row['name'] ?></td>
                       <td><?= $row['is_active']?></td>
                       <td>
-                      <a href="edit-major.php?Edit=<?php echo $row['id'] ?>" class="btn btn-success btn-sm">Edit</a>
-                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="user.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                      <a href="edit-major.php?Edit=<?php echo $row['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                      <a href="add-detail-major.php" class="btn btn-primary btn-sm"><i class="bi bi-eye-fill"></i></a>
+                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="user.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
                        
                       </td>
                     </tr>

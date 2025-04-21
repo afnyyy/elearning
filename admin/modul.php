@@ -7,19 +7,35 @@ if (empty($_SESSION['EMAIL'])) {
   header("Location: ../login.php");
 }
 
-$porto = mysqli_query($koneksi, "SELECT * FROM isi_porto");
-$rows = mysqli_fetch_all($porto, MYSQLI_ASSOC);
+$queryLm = "SELECT
+    l.id AS learning_moduls_id,
+    i.name AS instructor_name,
+    l.id,
+    l.name,
+    l.description,
+    l.is_active
+FROM
+    learning_moduls l
+LEFT JOIN
+    instructors i ON l.instructor_id = i.id
+ORDER BY
+    l.id DESC";
+$Lm = mysqli_fetch_all($queryLm, MYSQLI_ASSOC);
+
+$instructor = mysqli_query($koneksi, "SELECT * FROM instructors");
+$rowIns = mysqli_fetch_all($instructor, MYSQLI_ASSOC);
+
 
 if (isset($_GET['idDel'])) {
   $id = $_GET['idDel'];
 
-  $cekFOTO = mysqli_query($koneksi, "SELECT foto FROM isi_porto WHERE id = '$id'");
+  $cekFOTO = mysqli_query($koneksi, "SELECT photo FROM learning_moduls WHERE id = $id");
   $rowcekFoto = mysqli_fetch_assoc($cekFOTO);
-  if ($rowcekFoto && file_exists("../assets/uploads/" . $fotoLama['foto'])) {
-    unlink("../assets/uploads/" . $rowcekFoto['foto']);
-    $delete = mysqli_query($koneksi, "DELETE FROM isi_porto WHERE id = '$id'");
+  if ($rowcekFoto && file_exists("../assets/uploads/" . $fotoLama['photo'])) {
+    unlink("../assets/uploads/" . $rowcekFoto['photo']);
+    $delete = mysqli_query($koneksi, "DELETE FROM learning_moduls WHERE id = $id");
     if ($delete) {
-      header("Location: portofolio.php");
+      header("Location: modul.php?delete=berhasil");
     }
   }
 
@@ -44,10 +60,10 @@ if (isset($_GET['idDel'])) {
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Portofolio</h1>
+      <h1>Admin</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="dashboard.php">Portofolio</a></li>
+          <li class="breadcrumb-item"><a href="dashboard.php">Admin</a></li>
           <li class="breadcrumb-item">Pages</li>
           <li class="breadcrumb-item active">Blank</li>
         </ol>
@@ -60,29 +76,30 @@ if (isset($_GET['idDel'])) {
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Portofolio</h5>
+              <h5 class="card-title">Instruktur</h5>
               <div class="table table-responsive">
-                <a class="btn btn-primary mb-2" href="add-edit-porto.php">CREATE</a>
+                <a class="btn btn-primary mb-2" href="edit-instruktur.php">CREATE</a>
                 <table class="table table-bordered">
                   <tr>
                     <th>No</th>
-                    <th>Nama Portofolio</th>
-                    <th>Foto</th>
-                    <th>URL Porto</th>
+                    <th>Instruktur</th>
+                    <th>Name</th>
+                    <th>Deskripsi</th>
+                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                   <?php
                   $no = 1;
-                  foreach ($rows as $row) {
+                  foreach ($Lm as $lms) {
                   ?>
                     <tr>
                       <td><?= $no++ ?></td>
-                      <td><?= $row['nama_porto'] ?></td>
-                      <td><img width="150" src="../assets/uploads/<?= $row['foto'] ?>" alt=""></td>
-                      <td><?= $row['link_porto'] ?></td>
-                      
-                      <td><a href="add-edit-porto.php?Edit=<?php echo $row['id'] ?>" class="btn btn-success btn-sm">Edit</a>
-                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="portofolio.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                      <td><?= $lms['instructor_name'] ?></td>
+                      <td><?= $lms['name'] ?></td>
+                      <td><?= $lms['description'] ?></td>
+                      <td><?= $lms['is_active'] ?></td>
+                      <td><a href="edit-instruktur.php?Edit=<?php echo $lms['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="instruktur.php?idDel=<?php echo $lms['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
                       </td>
                     </tr>
                   <?php

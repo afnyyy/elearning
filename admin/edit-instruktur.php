@@ -116,7 +116,7 @@ $rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title"><?php echo isset($_GET['edit']) ? 'Edit ' : 'Create New ' .' '?>Instruktur</h5>
+              <h5 class="card-title"><?php echo isset($_GET['Edit']) ? 'Edit ' : 'Create New ' .' '?>Instruktur</h5>
               <form action="" method="post" enctype="multipart/form-data">
                 <div class="row">
                   <div class="col-sm-6">
@@ -155,7 +155,7 @@ $rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
                         <label for="">Title</label>
                       </div>
                       <div class="col-sm-6">
-                        <input type="text" class="form-control" name="title" placeholder="Input your title (ex:S.Kom)" required value="<?php echo isset($_GET['Edit']) ? $rowUpdate['title'] : '' ?>">
+                        <input type="text" class="form-control" name="title" placeholder="Input your title (ex:S.Kom)" value="<?php echo isset($_GET['Edit']) ? $rowUpdate['title'] : '' ?>">
                       </div>
                     </div>
 
@@ -164,9 +164,9 @@ $rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
                         <label for="">Gender</label>
                       </div>
                       <div class="col-sm-6">
-                        <select name="" id="" >
+                        <select name="" id="" value="<?php echo isset($_GET['Edit']) ? $rowUpdate['gender'] : '' ?>">
                           <option value="" hidden>Choose</option>
-                          <option value="<?php echo isset($_GET['Edit']) ? $rowUpdate['gender'] : '' ?>">Man</option>
+                          <option value="1">Man</option>
                           <option value="0">Woman</option>
                         </select>
                       </div>
@@ -179,7 +179,7 @@ $rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
                         <label for="">Address</label>
                       </div>
                       <div class="col-sm-6">
-                        <input type="text" class="form-control" name="address" placeholder="Input your address" required value="<?php echo isset($_GET['Edit']) ? $rowUpdate['address'] : '' ?>">
+                        <input type="text" class="form-control" name="address" placeholder="Input your address" value="<?php echo isset($_GET['Edit']) ? $rowUpdate['address'] : '' ?>">
                       </div>
                     </div>
 
@@ -188,7 +188,7 @@ $rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
                         <label for="">Phone</label>
                       </div>
                       <div class="col-sm-6">
-                        <input type="number" class="form-control" name="phone" placeholder="Input your phone" required value="<?php echo isset($_GET['Edit']) ? $rowUpdate['phone'] : '' ?>">
+                        <input type="number" class="form-control" name="phone" placeholder="Input your phone" value="<?php echo isset($_GET['Edit']) ? $rowUpdate['phone'] : '' ?>">
                       </div>
                     </div>
 
@@ -213,9 +213,9 @@ $rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
                         <label for="">Status</label>
                       </div>
                       <div class="col-sm-6">
-                      <select name="" id="" >
+                        <select name="is_active" id="" value="<?php echo isset($_GET['Edit']) ? $rowUpdate['is_active'] : '' ?>">
                           <option value="" hidden>Choose</option>
-                          <option value="<?php echo isset($_GET['Edit']) ? $rowUpdate['is_active'] : '' ?>">Active</option>
+                          <option value="1">Active</option>
                           <option value="0">Non Active</option>
                         </select>
                       </div>

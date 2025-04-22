@@ -65,13 +65,13 @@ if (isset($_POST['login'])) {
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Login Dashboard</title>
+  <title>Login Sistem Informasi Manajeman Module</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="assets/img/ppkd.png" rel="icon">
+  <link href="assets/img/ppkd.png" rel="icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -119,7 +119,7 @@ if (isset($_POST['login'])) {
               <div class="d-flex justify-content-center py-4">
                 <a href="index.html" class="logo d-flex align-items-center w-auto">
                   <img src="assets/img/ppkd.png" alt="">
-                  <span class="d-none d-lg-block">Login</span>
+                  <span class="d-none d-lg-block"> Manajeman Module PPKDJP</span>
                 </a>
               </div><!-- End Logo -->
 

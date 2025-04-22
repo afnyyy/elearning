@@ -54,13 +54,13 @@
             </a>
           </li>
           <li>
-            <a href="add-edit-module.php">
+            <a href="modul-detail.php">
               <i class="bi bi-circle"></i><span>Module Details</span>
             </a>
           </li>
           <li>
-            <a href="?page=user">
-              <i class="bi bi-circle"></i><span>Report</span>
+            <a href="modul-siswa.php">
+              <i class="bi bi-circle"></i><span>Module Siswa</span>
             </a>
           </li>
         </ul>

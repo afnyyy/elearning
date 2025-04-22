@@ -7,39 +7,23 @@ if (empty($_SESSION['EMAIL'])) {
   header("Location: ../login.php");
 }
 
-$queryLm = "SELECT
-    l.id AS learning_moduls_id,
-    i.name AS instructor_name,
-    l.id,
-    l.name,
-    l.description,
-    l.is_active
-FROM
-    learning_moduls l
-LEFT JOIN
-    instructors i ON l.instructor_id = i.id
-ORDER BY
-    l.id DESC";
+$queryLm = mysqli_query($koneksi, "SELECT * FROM learning_moduls");
 $Lm = mysqli_fetch_all($queryLm, MYSQLI_ASSOC);
 
-$instructor = mysqli_query($koneksi, "SELECT * FROM instructors");
+$instructor = mysqli_query($koneksi, "SELECT i.*,u.name FROM instructors i LEFT JOIN users u ON i.user_id = u.id");
 $rowIns = mysqli_fetch_all($instructor, MYSQLI_ASSOC);
 
 
 if (isset($_GET['idDel'])) {
   $id = $_GET['idDel'];
 
-  $cekFOTO = mysqli_query($koneksi, "SELECT photo FROM learning_moduls WHERE id = $id");
-  $rowcekFoto = mysqli_fetch_assoc($cekFOTO);
-  if ($rowcekFoto && file_exists("../assets/uploads/" . $fotoLama['photo'])) {
-    unlink("../assets/uploads/" . $rowcekFoto['photo']);
-    $delete = mysqli_query($koneksi, "DELETE FROM learning_moduls WHERE id = $id");
-    if ($delete) {
-      header("Location: modul.php?delete=berhasil");
-    }
+  $del = mysqli_query($koneksi, "DELETE FROM learning_moduls WHERE id = $id");
+  if ($del) {
+    header("Location: modul.php?delete=berhasil");
   }
-
 }
+
+
 
 ?>
 <!DOCTYPE html>
@@ -76,9 +60,9 @@ if (isset($_GET['idDel'])) {
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Instruktur</h5>
+              <h5 class="card-title">Module</h5>
               <div class="table table-responsive">
-                <a class="btn btn-primary mb-2" href="edit-instruktur.php">CREATE</a>
+                <a class="btn btn-primary mb-2" href="add-module.php">CREATE</a>
                 <table class="table table-bordered">
                   <tr>
                     <th>No</th>
@@ -86,6 +70,7 @@ if (isset($_GET['idDel'])) {
                     <th>Name</th>
                     <th>Deskripsi</th>
                     <th>Status</th>
+                    <th>File</th>
                     <th>Actions</th>
                   </tr>
                   <?php
@@ -94,12 +79,14 @@ if (isset($_GET['idDel'])) {
                   ?>
                     <tr>
                       <td><?= $no++ ?></td>
-                      <td><?= $lms['instructor_name'] ?></td>
+                      <td><?= $lms['instructor_id'] ?></td>
                       <td><?= $lms['name'] ?></td>
                       <td><?= $lms['description'] ?></td>
                       <td><?= $lms['is_active'] ?></td>
-                      <td><a href="edit-instruktur.php?Edit=<?php echo $lms['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
-                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="instruktur.php?idDel=<?php echo $lms['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
+                      <td><a href="edit-module.php" class="btn btn-primary btn-sm">Add File</i></a></td>
+                      <td>
+                      <a href="add-module.php?Edit=<?php echo $lms['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="modul.php?idDel=<?php echo $lms['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
                       </td>
                     </tr>
                   <?php

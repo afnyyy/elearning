@@ -1,45 +1,17 @@
 <?php
-require_once "../koneksi.php";
 session_start();
+include '../koneksi.php';
 
 
 if (empty($_SESSION['EMAIL'])) {
   header("Location: ../login.php");
 }
 
-$user = mysqli_query($koneksi, "SELECT
-    u.id AS user_id,
-    u.name AS user_name,
-    u.id,
-    u.email,
-    u.password,
-    u.is_active,
-    r.name AS role_name
-FROM
-    users u
+$queryLmd = mysqli_query($koneksi, "SELECT  l.*,u.name FROM learning_modul_details l
 LEFT JOIN
-    user_role ur ON u.id = ur.user_id
-LEFT JOIN
-    roles r ON ur.role_id = r.id
-ORDER BY
-    u.id DESC");
-$rows = mysqli_fetch_all($user, MYSQLI_ASSOC);
+    learning_moduls u ON l.learning_modul_id = u.id");
+$Lmd = mysqli_fetch_all($queryLmd, MYSQLI_ASSOC);
 
-// Query untuk mengambil semua roles tetap diperlukan jika Anda membutuhkannya untuk keperluan lain di halaman ini
-$role = mysqli_query($koneksi, "SELECT * FROM roles");
-$rowRoles = mysqli_fetch_all($role, MYSQLI_ASSOC);
-
-
-if (isset($_GET['idDel'])) {
-
-  $id = $_GET['idDel'];
-
-  
-  $del = mysqli_query($koneksi, "DELETE FROM users WHERE id = $id");
-    if ($del) {
-      header("Location: user.php");
-    }
-}
 
 
 
@@ -66,7 +38,7 @@ if (isset($_GET['idDel'])) {
       <h1>Admin</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="dashboard.php">Admin</a></li>
           <li class="breadcrumb-item">Pages</li>
           <li class="breadcrumb-item active">Blank</li>
         </ol>
@@ -79,36 +51,27 @@ if (isset($_GET['idDel'])) {
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">User</h5>
+              <h5 class="card-title">Module</h5>
               <div class="table table-responsive">
-                <a class="btn btn-primary mb-2" href="edit-user.php">CREATE</a>
                 <table class="table table-bordered">
                   <tr>
                     <th>No</th>
-                    <th>Role</th>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th>Password</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th>Learning Module Name</th>
+                    <th>File Name Module</th>
+                    <th>File</th>
+                    <th>Reference Link</th>
                   </tr>
                   <?php
                   $no = 1;
-                  foreach ($rows as $row) {
+                  foreach ($Lmd as $lmdt) {
                   ?>
                     <tr>
                       <td><?= $no++ ?></td>
-                      <td><?= $row['role_name'] ?></td>
-                      <td><?= $row['user_name'] ?></td>
-                      <td><?= $row['email']?></td>
-                      <td><?= $row['password'] ?></td>
-                      <td><?= $row['is_active'] ?></td>
-                      <td>
-                      <a href="add-roleuser.php" class="btn btn-primary btn-sm">add role</i></i></a>
-                      <a href="edit-user.php?Edit=<?php echo $row['id'] ?>" class="btn btn-success btn-sm"><i class="bi bi-pencil-fill"></i></a>
-                      <a onclick="return confirm ('Yakin ingin menghapus?')" href="user.php?idDel=<?php echo $row['id'] ?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
-                       
-                      </td>
+                      <td><?= $lmdt['name'] ?></td>
+                      <td><?= $lmdt['file_name'] ?></td>
+                      <td><a href="../assets/uploads/<?= $lmdt['file'] ?>" target="_blank">Lihat PDF</a></td>
+                      <td><?= $lmdt['reference_link'] ?></td>
+                      
                     </tr>
                   <?php
                   } ?>

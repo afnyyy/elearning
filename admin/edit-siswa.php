@@ -114,7 +114,7 @@ $rowUsers = mysqli_fetch_all($user, MYSQLI_ASSOC);
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title"><?php echo isset($_GET['edit']) ? 'Edit ' : 'Create New ' .' '?>Siswa</h5>
+              <h5 class="card-title"><?php echo isset($_GET['Edit']) ? 'Edit ' : 'Create New ' .' '?>Siswa</h5>
               <form action="" method="post" enctype="multipart/form-data">
                 <div class="row">
                   <div class="col-sm-6">
